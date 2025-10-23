@@ -27,7 +27,7 @@ class _ProjectTabState extends State<ProjectTab> {
     fetchProjects();
   }
 
-  /// Lấy dữ liệu dự án từ API NodeJS
+  /// 🛰️ Lấy dữ liệu dự án từ API NodeJS
   Future<void> fetchProjects() async {
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -36,7 +36,7 @@ class _ProjectTabState extends State<ProjectTab> {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
           _projects = data;
-          _filteredProjects = data; // ban đầu hiển thị toàn bộ
+          _filteredProjects = data;
           _isLoading = false;
         });
       } else {
@@ -50,24 +50,28 @@ class _ProjectTabState extends State<ProjectTab> {
         _hasError = true;
         _isLoading = false;
       });
-      debugPrint(" Lỗi khi tải dữ liệu dự án: $e");
+      debugPrint("❌ Lỗi khi tải dữ liệu dự án: $e");
     }
   }
 
-  ///  Lọc theo từ khóa tìm kiếm
+  /// 🔍 Tìm kiếm theo tên dự án
   void _onSearch(String query) {
-    final lowerQuery = query.toLowerCase();
     setState(() {
-      _filteredProjects =
-          _projects.where((project) {
-            final name = (project['project_name'] ?? '').toLowerCase();
-            final location = (project['location'] ?? '').toLowerCase();
-            return name.contains(lowerQuery) || location.contains(lowerQuery);
-          }).toList();
+      if (query.isEmpty) {
+        // Nếu xóa hết ô tìm kiếm → hiển thị toàn bộ
+        _filteredProjects = _projects;
+      } else {
+        final lowerQuery = query.toLowerCase();
+        _filteredProjects =
+            _projects.where((project) {
+              final name = (project['project_name'] ?? '').toLowerCase();
+              return name.contains(lowerQuery);
+            }).toList();
+      }
     });
   }
 
-  ///  Áp dụng bộ lọc từ FilterScreen
+  /// 🧭 Áp dụng bộ lọc từ FilterScreen
   void _applyFilter(Map<String, dynamic> filter) {
     final String search = filter['search']?.toLowerCase() ?? '';
     final String location = filter['location'] ?? 'Tất cả';
@@ -96,7 +100,7 @@ class _ProjectTabState extends State<ProjectTab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        //  Thanh tìm kiếm + nút Filter
+        // 🔎 Thanh tìm kiếm + nút Filter
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -121,7 +125,7 @@ class _ProjectTabState extends State<ProjectTab> {
                       ),
                     );
                     if (result != null) {
-                      _applyFilter(result); //  áp dụng lọc
+                      _applyFilter(result);
                     }
                   },
                 ),
@@ -130,7 +134,7 @@ class _ProjectTabState extends State<ProjectTab> {
           ),
         ),
 
-        //  Danh sách dự án
+        // 📋 Danh sách dự án
         Expanded(
           child:
               _isLoading
@@ -144,36 +148,46 @@ class _ProjectTabState extends State<ProjectTab> {
                   )
                   : RefreshIndicator(
                     onRefresh: fetchProjects,
-                    child: ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: _filteredProjects.length,
-                      itemBuilder: (context, index) {
-                        final project = _filteredProjects[index];
-
-                        String imageUrl = project['main_image'] ?? '';
-                        if (imageUrl.isNotEmpty &&
-                            !imageUrl.startsWith('http')) {
-                          imageUrl = 'http://10.0.2.2:5000$imageUrl';
-                        }
-
-                        return ProjectCard(
-                          imageUrl: imageUrl,
-                          projectName:
-                              project['project_name'] ?? 'Không có tên dự án',
-                          location: project['location'] ?? 'Chưa xác định',
-                          status: project['status'] ?? '',
-                          onContactPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Liên hệ về dự án: ${project['project_name']}',
-                                ),
+                    child:
+                        _filteredProjects.isEmpty
+                            ? const Center(
+                              child: Text(
+                                'Không tìm thấy dự án phù hợp.',
+                                style: TextStyle(fontSize: 16),
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+                            )
+                            : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: _filteredProjects.length,
+                              itemBuilder: (context, index) {
+                                final project = _filteredProjects[index];
+
+                                String imageUrl = project['main_image'] ?? '';
+                                if (imageUrl.isNotEmpty &&
+                                    !imageUrl.startsWith('http')) {
+                                  imageUrl = 'http://10.0.2.2:5000$imageUrl';
+                                }
+
+                                return ProjectCard(
+                                  imageUrl: imageUrl,
+                                  projectName:
+                                      project['project_name'] ??
+                                      'Không có tên dự án',
+                                  location:
+                                      project['location'] ?? 'Chưa xác định',
+                                  status: project['status'] ?? '',
+                                  onContactPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Liên hệ về dự án: ${project['project_name']}',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                   ),
         ),
       ],
