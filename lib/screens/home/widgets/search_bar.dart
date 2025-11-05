@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  final Function(String)? onChanged;
+  final Function(String)? onSearch;
 
-  const SearchBarWidget({super.key, this.onChanged});
+  const SearchBarWidget({super.key, this.onSearch});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      onChanged: onChanged,
       decoration: InputDecoration(
-        hintText: 'Tìm theo dự án, trạng thái...',
-        prefixIcon: const Icon(Icons.search, color: Colors.grey),
-        filled: true,
-        fillColor: Colors.grey[200],
-        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+        hintText: 'Tìm kiếm dự án...',
+        prefixIcon: const Icon(Icons.search),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: Colors.grey),
         ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       ),
+      onChanged: onSearch,
     );
   }
 }
