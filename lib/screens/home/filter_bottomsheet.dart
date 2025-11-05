@@ -1,19 +1,83 @@
 import 'package:flutter/material.dart';
 
-class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
+class FilterScreen extends StatefulWidget {
+  const FilterScreen({super.key});
 
   @override
-  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+  State<FilterScreen> createState() => _FilterScreenState();
 }
 
-class _FilterBottomSheetState extends State<FilterBottomSheet> {
+class _FilterScreenState extends State<FilterScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  // Danh sách 63 tỉnh thành Việt Nam
   final List<String> _locations = [
     'Tất cả',
+    'An Giang',
+    'Bà Rịa - Vũng Tàu',
+    'Bắc Giang',
+    'Bắc Kạn',
+    'Bạc Liêu',
+    'Bắc Ninh',
+    'Bến Tre',
+    'Bình Định',
+    'Bình Dương',
+    'Bình Phước',
+    'Bình Thuận',
+    'Cà Mau',
+    'Cần Thơ',
+    'Cao Bằng',
     'Đà Nẵng',
-    'Hồ Chí Minh',
+    'Đắk Lắk',
+    'Đắk Nông',
+    'Điện Biên',
+    'Đồng Nai',
+    'Đồng Tháp',
+    'Gia Lai',
+    'Hà Giang',
+    'Hà Nam',
     'Hà Nội',
+    'Hà Tĩnh',
+    'Hải Dương',
+    'Hải Phòng',
+    'Hậu Giang',
+    'Hòa Bình',
+    'Hưng Yên',
+    'Khánh Hòa',
+    'Kiên Giang',
+    'Kon Tum',
+    'Lai Châu',
+    'Lâm Đồng',
+    'Lạng Sơn',
+    'Lào Cai',
+    'Long An',
+    'Nam Định',
+    'Nghệ An',
+    'Ninh Bình',
+    'Ninh Thuận',
+    'Phú Thọ',
+    'Phú Yên',
+    'Quảng Bình',
+    'Quảng Nam',
+    'Quảng Ngãi',
+    'Quảng Ninh',
+    'Quảng Trị',
+    'Sóc Trăng',
+    'Sơn La',
+    'Tây Ninh',
+    'Thái Bình',
+    'Thái Nguyên',
+    'Thanh Hóa',
+    'Thừa Thiên Huế',
+    'Tiền Giang',
+    'TP. Hồ Chí Minh',
+    'Trà Vinh',
+    'Tuyên Quang',
+    'Vĩnh Long',
+    'Vĩnh Phúc',
+    'Yên Bái',
   ];
+
   final List<String> _status = [
     'Tất cả',
     'Đang mở bán',
@@ -26,114 +90,139 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Tìm kiếm nâng cao',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF8B1E1E),
+        title: const Text(
+          'Bộ lọc dự án',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Ô tìm kiếm
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm theo tên dự án...',
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-                TextButton(
+              ),
+              const SizedBox(height: 20),
+
+              // Mục chọn vị trí
+              const Text(
+                'Vị trí',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedLocation,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    items:
+                        _locations
+                            .map(
+                              (loc) => DropdownMenuItem(
+                                value: loc,
+                                child: Text(loc),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedLocation = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Mục chọn trạng thái
+              const Text(
+                'Trạng thái',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedStatus,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    items:
+                        _status
+                            .map(
+                              (st) =>
+                                  DropdownMenuItem(value: st, child: Text(st)),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedStatus = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Nút áp dụng
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF8B1E1E),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
                   onPressed: () {
-                    setState(() {
-                      _selectedLocation = 'Tất cả';
-                      _selectedStatus = 'Tất cả';
+                    Navigator.pop(context, {
+                      'search': _searchController.text,
+                      'location': _selectedLocation,
+                      'status': _selectedStatus,
                     });
                   },
                   child: const Text(
-                    'Xóa bộ lọc',
-                    style: TextStyle(color: Colors.red),
+                    'Áp dụng',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 10),
-
-            // Bộ lọc vị trí
-            const Text('Vị trí', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            Column(
-              children:
-                  _locations.map((location) {
-                    return RadioListTile<String>(
-                      value: location,
-                      groupValue: _selectedLocation,
-                      activeColor: Colors.red,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedLocation = value;
-                        });
-                      },
-                      title: Text(location),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                    );
-                  }).toList(),
-            ),
-
-            const SizedBox(height: 10),
-
-            // Bộ lọc trạng thái
-            const Text(
-              'Trạng thái',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            Column(
-              children:
-                  _status.map((status) {
-                    return RadioListTile<String>(
-                      value: status,
-                      groupValue: _selectedStatus,
-                      activeColor: Colors.red,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedStatus = value;
-                        });
-                      },
-                      title: Text(status),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                    );
-                  }).toList(),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Nút áp dụng
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () {
-                  // TODO: Trả kết quả filter về màn hình ProjectTab
-                  Navigator.pop(context, {
-                    'location': _selectedLocation,
-                    'status': _selectedStatus,
-                  });
-                },
-                child: const Text(
-                  'Áp dụng',
-                  style: TextStyle(fontSize: 16, color: Color(0xFF8B1E1E)),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
