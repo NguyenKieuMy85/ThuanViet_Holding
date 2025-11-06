@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FilterScreen extends StatefulWidget {
-  const FilterScreen({super.key});
+class FilterBottomSheet extends StatefulWidget {
+  const FilterBottomSheet({super.key});
 
   @override
-  State<FilterScreen> createState() => _FilterScreenState();
+  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
 
-class _FilterScreenState extends State<FilterScreen> {
+class _FilterBottomSheetState extends State<FilterBottomSheet> {
   final TextEditingController _searchController = TextEditingController();
 
   // Danh sách 63 tỉnh thành Việt Nam

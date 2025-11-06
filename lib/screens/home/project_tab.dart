@@ -121,7 +121,7 @@ class _ProjectTabState extends State<ProjectTab> {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const FilterScreen(),
+                        builder: (context) => const FilterBottomSheet(),
                       ),
                     );
                     if (result != null) {
