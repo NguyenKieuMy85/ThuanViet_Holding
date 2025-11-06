@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../project_detail.dart';
 
 class ProjectCard extends StatelessWidget {
   final String imageUrl;
   final String projectName;
   final String location;
   final String status;
-  final VoidCallback onContactPressed;
+  final VoidCallback? onContactPressed;
 
   const ProjectCard({
     super.key,
@@ -13,120 +14,129 @@ class ProjectCard extends StatelessWidget {
     required this.projectName,
     required this.location,
     required this.status,
-    required this.onContactPressed,
+    this.onContactPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Ảnh dự án
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.network(
-              imageUrl.startsWith('http')
-                  ? imageUrl
-                  : 'http://10.0.2.2:5000${imageUrl.startsWith('/') ? imageUrl : '/$imageUrl'}',
-              height: 180,
+      elevation: 2,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProjectDetailScreen(projectName: projectName),
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Ảnh dự án
+            Image.asset(
+              imageUrl,
               width: double.infinity,
+              height: 180,
               fit: BoxFit.cover,
-              errorBuilder:
-                  (context, error, stackTrace) => Container(
-                    height: 180,
-                    color: Colors.grey[300],
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.broken_image, size: 40),
-                  ),
             ),
-          ),
 
-          // Nội dung
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Hàng 1: Tên dự án + Nút Liên hệ
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        projectName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF8B1E1E),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: onContactPressed,
-                      icon: const Icon(
-                        Icons.phone,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      label: const Text(
-                        'Liên hệ',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8B1E1E),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Hàng: Tên dự án + Nút Liên hệ
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          projectName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF8B1E1E), // màu chữ đỏ đậm
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                // Hàng 2: Vị trí
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 18, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        location,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF8B1E1E),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                         ),
-                        overflow: TextOverflow.ellipsis,
+                        onPressed: onContactPressed ?? () {},
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.phone, color: Colors.white, size: 16),
+                            SizedBox(width: 6),
+                            Text(
+                              'Liên hệ',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 4),
-
-                // Hàng 3: Trạng thái
-                Text(
-                  'Trạng thái: $status',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: _getStatusColor(status),
+                    ],
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 6),
+
+                  // Vị trí
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          location,
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Trạng thái (status)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      status,
+                      style: TextStyle(
+                        color: _getStatusColor(status),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
