@@ -39,27 +39,40 @@ class _HomeScreenState extends State<HomeScreen>
           // TabBar
           TabBar(
             controller: _tabController,
-            labelColor: Color(0xFF8B1E1E),
+            labelColor: const Color(0xFF8B1E1E),
             unselectedLabelColor: Colors.black54,
+            labelStyle: const TextStyle(
+              fontSize: 20, // ✅ chỉnh kích thước chữ
+              fontWeight: FontWeight.bold,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: 20, // ✅ chỉnh  thước chữ
+            ),
             indicator: UnderlineTabIndicator(
               borderSide: const BorderSide(
-                width: 3, // độ dày của line
+                width: 3,
                 color: Color(0xFF8B1E1E),
               ),
               insets: EdgeInsets.symmetric(
                 horizontal:
-                    (MediaQuery.of(context).size.width / 2 -
-                        (MediaQuery.of(context).size.width / 2) / 2),
+                (MediaQuery.of(context).size.width / 2 -
+                    (MediaQuery.of(context).size.width / 2) / 2),
               ),
             ),
-            tabs: const [Tab(text: 'Dự án'), Tab(text: 'Tin tức')],
+            tabs: const [
+              Tab(text: 'Dự án'),
+              Tab(text: 'Tin tức'),
+            ],
           ),
 
           // Nội dung Tab
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [ProjectTab(), NewsTab()],
+              children: const [
+                ProjectTab(),
+                NewsTab(),
+              ],
             ),
           ),
         ],
@@ -67,3 +80,4 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
+
