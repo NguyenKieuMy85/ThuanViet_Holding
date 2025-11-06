@@ -1,366 +1,230 @@
 import 'package:flutter/material.dart';
 
-class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
+class FilterScreen extends StatefulWidget {
+  const FilterScreen({super.key});
 
   @override
-  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+  State<FilterScreen> createState() => _FilterScreenState();
 }
 
-class _FilterBottomSheetState extends State<FilterBottomSheet>
-    with SingleTickerProviderStateMixin {
-  bool showLocation = false;
-  bool showStatus = false;
+class _FilterScreenState extends State<FilterScreen> {
+  final TextEditingController _searchController = TextEditingController();
 
-  final List<String> locations = ['Chọn tất cả', 'Đà Nẵng', 'Hồ Chí Minh', 'Hà Nội'];
-  final List<String> statuses = ['Chọn tất cả', 'Đang mở bán', 'Sắp mở bán', 'Đã bàn giao'];
+  // Danh sách 63 tỉnh thành Việt Nam
+  final List<String> _locations = [
+    'Tất cả',
+    'An Giang',
+    'Bà Rịa - Vũng Tàu',
+    'Bắc Giang',
+    'Bắc Kạn',
+    'Bạc Liêu',
+    'Bắc Ninh',
+    'Bến Tre',
+    'Bình Định',
+    'Bình Dương',
+    'Bình Phước',
+    'Bình Thuận',
+    'Cà Mau',
+    'Cần Thơ',
+    'Cao Bằng',
+    'Đà Nẵng',
+    'Đắk Lắk',
+    'Đắk Nông',
+    'Điện Biên',
+    'Đồng Nai',
+    'Đồng Tháp',
+    'Gia Lai',
+    'Hà Giang',
+    'Hà Nam',
+    'Hà Nội',
+    'Hà Tĩnh',
+    'Hải Dương',
+    'Hải Phòng',
+    'Hậu Giang',
+    'Hòa Bình',
+    'Hưng Yên',
+    'Khánh Hòa',
+    'Kiên Giang',
+    'Kon Tum',
+    'Lai Châu',
+    'Lâm Đồng',
+    'Lạng Sơn',
+    'Lào Cai',
+    'Long An',
+    'Nam Định',
+    'Nghệ An',
+    'Ninh Bình',
+    'Ninh Thuận',
+    'Phú Thọ',
+    'Phú Yên',
+    'Quảng Bình',
+    'Quảng Nam',
+    'Quảng Ngãi',
+    'Quảng Ninh',
+    'Quảng Trị',
+    'Sóc Trăng',
+    'Sơn La',
+    'Tây Ninh',
+    'Thái Bình',
+    'Thái Nguyên',
+    'Thanh Hóa',
+    'Thừa Thiên Huế',
+    'Tiền Giang',
+    'TP. Hồ Chí Minh',
+    'Trà Vinh',
+    'Tuyên Quang',
+    'Vĩnh Long',
+    'Vĩnh Phúc',
+    'Yên Bái',
+  ];
 
-  List<String> selectedLocations = [];
-  List<String> selectedStatuses = [];
+  final List<String> _status = [
+    'Tất cả',
+    'Đang mở bán',
+    'Sắp mở bán',
+    'Đã bàn giao',
+  ];
 
-  void clearFilters() {
-    selectedLocations.clear();
-    selectedStatuses.clear();
-    setState(() {});
-  }
-
-  void toggleAll() {
-    if (!showLocation && !showStatus) {
-      showLocation = true;
-      showStatus = true;
-    } else if (showLocation != showStatus) {
-      showLocation = true;
-      showStatus = true;
-    } else {
-      showLocation = false;
-      showStatus = false;
-    }
-    setState(() {});
-  }
+  String? _selectedLocation = 'Tất cả';
+  String? _selectedStatus = 'Tất cả';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 900,
-      padding: const EdgeInsets.all(14),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF8B1E1E),
+        title: const Text(
+          'Bộ lọc dự án',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      child: Column(
-        children: [
-          // ==== HEADER ====
-          Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.close, size: 24),
-              ),
-              const Spacer(),
-              const Text(
-                "Tìm kiếm nâng cao",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: clearFilters,
-                child: const Text(
-                  "Xóa bộ lọc",
-                  style: TextStyle(fontSize: 14, color: Colors.red),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // ==== ĐƯỜNG NGANG TRÊN ====
-          Container(
-            height: 8,
-            color: const Color(0xFFF8F8F8),
-          ),
-
-          const SizedBox(height: 8),
-
-          // ==== SEARCH BAR + FILTER BUTTON ====
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    hintText: "Tìm theo dự án, trạng thái",
-                    contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    border: InputBorder.none,
-                    filled: true,
-                    fillColor: const Color(0xFFF8F8F8),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: toggleAll,
-                child: const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Color(0xFF8B1E1E),
-                  child: Icon(Icons.filter_list, color: Colors.white, size: 18),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          // ==== ĐƯỜNG NGANG DƯỚI ====
-          Container(
-            height: 8,
-            color: const Color(0xFFF8F8F8),
-          ),
-
-          const SizedBox(height: 12),
-
-          // ==== SCROLLABLE NỘI DUNG ====
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  // ==== VỊ TRÍ ====
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => setState(() => showLocation = !showLocation),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "Vị trí",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            showLocation ? Icons.expand_less : Icons.expand_more,
-                            size: 30,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  AnimatedCrossFade(
-                    firstChild: const SizedBox.shrink(),
-                    secondChild: Column(
-                      children: locations
-                          .map((loc) => buildOptionRow(
-                        label: loc,
-                        list: selectedLocations,
-                        allItems: locations,
-                      ))
-                          .toList(),
-                    ),
-                    crossFadeState: showLocation
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
-                    duration: const Duration(milliseconds: 250),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // ==== TRẠNG THÁI ====
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => setState(() => showStatus = !showStatus),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "Trạng thái",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            showStatus ? Icons.expand_less : Icons.expand_more,
-                            size: 30,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // ==== NỀN XÁM SAU TRẠNG THÁI ====
-                  Container(
-                    width: double.infinity,
-                    color: const Color(0xFFF8F8F8),
-                    child: Column(
-                      children: [
-                        AnimatedCrossFade(
-                          firstChild: const SizedBox.shrink(),
-                          secondChild: Column(
-                            children: statuses
-                                .map((st) => buildOptionRow(
-                              label: st,
-                              list: selectedStatuses,
-                              allItems: statuses,
-                            ))
-                                .toList(),
-                          ),
-                          crossFadeState: showStatus
-                              ? CrossFadeState.showSecond
-                              : CrossFadeState.showFirst,
-                          duration: const Duration(milliseconds: 250),
-                        ),
-
-                        const SizedBox(height: 620), // ✅ giữ nguyên khoảng trống
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ==== APPLY BUTTON ====
-          Container(
-            color: const Color(0xFFF8F8F8), // ✅ nền sau nút áp dụng cũng F8F8F8
-            padding: const EdgeInsets.only(top: 12, bottom: 14),
-            child: SizedBox(
-              width: 140,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B1E1E),
-                  shape: RoundedRectangleBorder(
+              // Ô tìm kiếm
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm theo tên dự án...',
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                onPressed: () {
-                  Navigator.pop(context, {
-                    'location': selectedLocations,
-                    'status': selectedStatuses,
-                  });
-                },
-                child: const Text("Áp dụng", style: TextStyle(color: Colors.white)),
               ),
-            ),
+              const SizedBox(height: 20),
+
+              // Mục chọn vị trí
+              const Text(
+                'Vị trí',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedLocation,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    items:
+                        _locations
+                            .map(
+                              (loc) => DropdownMenuItem(
+                                value: loc,
+                                child: Text(loc),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedLocation = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Mục chọn trạng thái
+              const Text(
+                'Trạng thái',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedStatus,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    items:
+                        _status
+                            .map(
+                              (st) =>
+                                  DropdownMenuItem(value: st, child: Text(st)),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedStatus = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Nút áp dụng
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF8B1E1E),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context, {
+                      'search': _searchController.text,
+                      'location': _selectedLocation,
+                      'status': _selectedStatus,
+                    });
+                  },
+                  child: const Text(
+                    'Áp dụng',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  // ==== BUILD OPTION ROW ====
-  Widget buildOptionRow({
-    required String label,
-    required List<String> list,
-    required List<String> allItems,
-  }) {
-    final bool isSelected = list.contains(label);
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _toggleSelection(label, list, allItems),
-      child: Container(
-        margin: const EdgeInsets.only(top: 1),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: const BoxDecoration(
-          color: Color(0xFFF8F8F8),
-          border: Border(bottom: BorderSide(color: Color(0xFFF3F3F3))),
-        ),
-        child: Row(
-          children: [
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            Checkbox(
-              value: isSelected,
-              onChanged: (_) => _toggleSelection(label, list, allItems),
-              side: const BorderSide(color: Color.fromRGBO(0, 0, 0, 0.2), width: 3),
-              activeColor: const Color(0xFF8B1E1E),
-              checkColor: Colors.white,
-            ),
-          ],
         ),
       ),
     );
-  }
-
-  void _toggleSelection(String label, List<String> list, List<String> allItems) {
-    setState(() {
-      if (label == 'Chọn tất cả') {
-        if (list.length == allItems.length) {
-          list.clear();
-        } else {
-          list
-            ..clear()
-            ..addAll(allItems);
-        }
-      } else {
-        if (list.contains(label)) {
-          list.remove(label);
-          list.remove('Chọn tất cả');
-        } else {
-          list.add(label);
-          if (list.toSet().containsAll(allItems.where((e) => e != 'Chọn tất cả'))) {
-            if (!list.contains('Chọn tất cả')) list.add('Chọn tất cả');
-          }
-        }
-      }
-    });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
